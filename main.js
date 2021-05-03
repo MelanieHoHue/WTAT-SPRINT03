@@ -6,6 +6,33 @@ const express = require("express"),
   errorController = require("./controllers/errorController"),
   layouts = require("express-ejs-layouts");
 
+const MongoDB = require("mongodb").MongoClient,
+  dbURL = "mongodb://localhost:27017",
+  dbName = "demo-recipe-db";
+
+MongoDB.connect(dbURL, (error, client) => {
+  
+  if (error) throw error;
+
+  let db = client.db(dbName);
+  db.collection("contacts").insertOne({
+    name: "Freddie Mercury",
+    email: "ffred@queen.com"
+  }, (error, data) => {
+    if (error) throw error;
+    console.log(db);
+  });
+
+  db.collection("contacts").find().toArray((error, data) => {
+    
+    if (error) throw error;
+    
+    console.log(data);
+
+  });
+
+});
+
 app.set("view engine", "ejs");
 app.set("port", process.env.PORT || 3000);
 app.use(
