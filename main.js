@@ -6,7 +6,10 @@ const express = require("express"),
   errorController = require("./controllers/errorController"),
   layouts = require("express-ejs-layouts"),
   mongoose = require("mongoose"),
-  Subscriber = require("./models/subscriber");
+  Subscriber = require("./models/subscriber"),
+  subscribersController = require("./controllers/subscribersController");
+
+mongoose.Promise = global.Promise;
 
 mongoose.connect(
   "mongodb://localhost:27017/demo-recipe-db",
@@ -31,8 +34,18 @@ app.get("/", (req, res) => {
 });
 
 app.get("/courses", homeController.showCourses);
-app.get("/contact", homeController.showSignUp);
-app.post("/contact", homeController.postedSignUpForm);
+
+//app.get("/contact", homeController.showSignUp);
+//app.post("/contact", homeController.postedSignUpForm);
+
+app.get("/contact", subscribersController.getSubcriptionPage);
+app.post("/subscribe", subscribersController.saveSubscriber); 
+
+app.get("/subscribers", subscribersController.getAllSubscribers, (req, res, next) => {
+  let answer = req.data;
+  console.log(answer);
+  res.render("subscribers", {subscribers: answer});
+})
 
 app.use(errorController.pageNotFoundError);
 app.use(errorController.internalServerError);
