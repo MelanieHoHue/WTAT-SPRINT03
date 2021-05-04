@@ -4,34 +4,16 @@ const express = require("express"),
   app = express(),
   homeController = require("./controllers/homeController"),
   errorController = require("./controllers/errorController"),
-  layouts = require("express-ejs-layouts");
+  layouts = require("express-ejs-layouts"),
+  mongoose = require("mongoose"),
+  Subscriber = require("./models/subscriber");
 
-const MongoDB = require("mongodb").MongoClient,
-  dbURL = "mongodb://localhost:27017",
-  dbName = "demo-recipe-db";
+mongoose.connect(
+  "mongodb://localhost:27017/demo-recipe-db",
+  {useNewUrlParser: true}
+  );
 
-MongoDB.connect(dbURL, (error, client) => {
-  
-  if (error) throw error;
-
-  let db = client.db(dbName);
-  db.collection("contacts").insertOne({
-    name: "Freddie Mercury",
-    email: "ffred@queen.com"
-  }, (error, data) => {
-    if (error) throw error;
-    console.log(db);
-  });
-
-  db.collection("contacts").find().toArray((error, data) => {
-    
-    if (error) throw error;
-    
-    console.log(data);
-
-  });
-
-});
+const db = mongoose.connection;
 
 app.set("view engine", "ejs");
 app.set("port", process.env.PORT || 3000);
@@ -58,3 +40,8 @@ app.use(errorController.internalServerError);
 app.listen(app.get("port"), () => {
   console.log(`Server running at http://localhost:${app.get("port")}`);
 });
+
+db.once("open", () => {
+  console.log("Successfully connected to MongoDB using Mongoose!");
+});
+
