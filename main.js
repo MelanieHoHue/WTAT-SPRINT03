@@ -12,7 +12,7 @@ const express = require("express"),
 mongoose.Promise = global.Promise;
 
 mongoose.connect(
-  "mongodb://localhost:27017/demo-recipe-db",
+  process.env.MONGODB_URI || "mongodb://localhost:27017/demo-recipe-db",
   {useNewUrlParser: true}
   );
 
@@ -35,9 +35,6 @@ app.get("/", (req, res) => {
 
 app.get("/courses", homeController.showCourses);
 
-//app.get("/contact", homeController.showSignUp);
-//app.post("/contact", homeController.postedSignUpForm);
-
 app.get("/contact", subscribersController.getSubcriptionPage);
 app.post("/subscribe", subscribersController.saveSubscriber); 
 
@@ -50,7 +47,7 @@ app.get("/subscribers", subscribersController.getAllSubscribers, (req, res, next
 app.use(errorController.pageNotFoundError);
 app.use(errorController.internalServerError);
 
-app.listen(app.get("port"), () => {
+const server = app.listen(app.get("port"), () => {
   console.log(`Server running at http://localhost:${app.get("port")}`);
 });
 
